@@ -20,7 +20,7 @@ async function start() {
   });
 
   app.use(cors({
-    origin: 'https://101508691-comp3133-assignment2-g1i5.vercel.app/graphql',
+    origin: 'https://101508691-comp3133-assignment2-g1i5.vercel.app',
     credentials: true
   }));
 
