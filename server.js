@@ -19,12 +19,10 @@ async function start() {
     next();
   });
 
-  app.use(
-    cors({
-      origin: "http://localhost:4200",
-      credentials: true,
-    })
-  );
+  app.use(cors({
+    origin: 'https://101508691-comp3133-assignment2-g1i5.vercel.app',
+    credentials: true
+  }));
 
   await connectDB(process.env.MONGO_URI);
 
