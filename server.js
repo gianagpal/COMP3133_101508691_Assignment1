@@ -14,18 +14,37 @@ const resolvers = require("./src/graphql/resolvers");
 async function start() {
   const app = express();
 
-  await connectDB(process.env.MONGO_URI);
-
-  const server = new ApolloServer({ typeDefs, resolvers });
-  await server.start();
-
-  app.get("/graphql", (req, res) => {
-    res.send("GraphQL endpoint is ready. Use POST requests from Postman to /graphql.");
+  app.use((req, res, next) => {
+    console.log(req.method, req.url);
+    next();
   });
 
-  app.post(
+  app.use(
+    cors({
+      origin: "http://localhost:4200",
+      credentials: true,
+    })
+  );
+
+  await connectDB(process.env.MONGO_URI);
+
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  });
+
+  await server.start();
+
+  app.get("/", (req, res) => {
+    res.send("API Running");
+  });
+
+  app.get("/graphql", (req, res) => {
+    res.send("GraphQL endpoint is ready. Use POST requests to /graphql.");
+  });
+
+  app.use(
     "/graphql",
-    cors(),
     bodyParser.json({ limit: "10mb" }),
     expressMiddleware(server, {
       context: async ({ req }) => ({
@@ -33,8 +52,6 @@ async function start() {
       }),
     })
   );
-
-  app.get("/", (req, res) => res.send("API Running"));
 
   const PORT = process.env.PORT || 4000;
   app.listen(PORT, () => {
