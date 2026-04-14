@@ -14,13 +14,13 @@ const resolvers = require("./src/graphql/resolvers");
 async function start() {
   const app = express();
 
-  app.use((req, res, next) => {
-    console.log(req.method, req.url);
-    next();
-  });
-
   app.use(cors({
-    origin: 'https://101508691-comp3133-assignment2-g1i5.vercel.app',
+    origin: [
+      "http://localhost:4200",
+      "101508691-comp3133-assignment2-g1i5-gvnnkkkq5.vercel.app"
+    ],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
   }));
 
