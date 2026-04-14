@@ -14,15 +14,26 @@ const resolvers = require("./src/graphql/resolvers");
 async function start() {
   const app = express();
 
-  app.use(cors({
-    origin: [
-      "http://localhost:4200",
-      "101508691-comp3133-assignment2-g1i5-gvnnkkkq5.vercel.app"
-    ],
+  const allowedOrigins = [
+    "http://localhost:4200",
+    "https://101508691-comp3133-assignment2-g1i5-gvnnkkkq5.vercel.app"
+  ];
+
+  const corsOptions = {
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
-  }));
+  };
+
+  app.use(cors(corsOptions));
+  app.options("/graphql", cors(corsOptions));
 
   await connectDB(process.env.MONGO_URI);
 
@@ -44,6 +55,7 @@ async function start() {
   app.use(
     "/graphql",
     bodyParser.json({ limit: "10mb" }),
+    cors(corsOptions),
     expressMiddleware(server, {
       context: async ({ req }) => ({
         token: req.headers.authorization || "",
